@@ -1,0 +1,235 @@
+
+use classicmodels_db;
+
+select * from customers;
+select * from orders;
+
+select a.customernumber, a.country, a.phone, b.ordernumber, b.status
+from customers a
+inner join orders b
+on a.customernumber = b.customernumber
+order by a.customernumber;
+
+select a.customernumber, a.country, a.phone, b.ordernumber, b.status
+from customers a
+Left join orders b
+on a.customernumber = b.customernumber
+where b.ordernumber is null
+order by a.customernumber;
+
+select a.customernumber, a.country, a.phone, b.ordernumber, b.status
+from customers a
+Right join orders b
+on a.customernumber = b.customernumber
+order by a.customernumber;
+
+select a.customernumber, a.country, a.phone, b.ordernumber, b.status
+from customers a
+inner join orders b
+on a.customernumber = b.customernumber
+where b.status = "Disputed"
+order by a.customernumber;
+
+select distinct status from orders;
+
+select a.customernumber, a.country, a.phone, b.ordernumber, b.status
+from customers a
+inner join orders b
+on a.customernumber = b.customernumber
+where b.status = "In Process"
+and a.country = "USA"
+order by a.customernumber;
+
+select * from orders;
+select * from orderdetails;
+
+select a.customernumber, a.country, a.phone, b.ordernumber, b.status, c.productcode
+from customers a
+left join orders b
+on a.customernumber = b.customernumber
+left join orderdetails c
+on b.ordernumber = c.ordernumber
+order by a.customernumber;
+
+select * from customers;
+select * from offices;
+
+select distinct state from customers
+union
+select distinct state from offices
+order by state;
+
+select distinct state from customers
+except
+select distinct state from offices
+order by state;
+
+
+select distinct a.state
+from customers a
+inner join offices b
+on a.state = b.state
+order by a.state;
+
+select distinct state from customers where state in (select distinct state from offices);
+
+
+create database test_db1;
+use test_db1;
+show tables;
+
+create table Persons(
+PersonID int,
+FirstName varchar(255),
+LastName varchar(255),
+City varchar(255)
+);
+
+select * from Persons;
+
+insert into Persons values
+(50, "Virat", "Kohli","Delhi"),
+(60, "Sachin", "Tendulkar", "Mumbai")
+;
+
+select * from persons;
+Alter table Persons
+change column FirstName first_name varchar(255);
+
+Alter table persons
+Add age int;
+
+Update Persons
+set age = 35
+where PersonID = 50;
+
+Update Persons
+set City = "Gurgaon"
+where PersonID = 50;
+
+delete from Persons
+where personID = 50;
+
+alter table persons
+drop column age;
+
+drop table persons;
+
+drop database test_db1;
+
+
+
+use moviesdb;
+
+select * from actors;
+select * from movies;
+
+select industry, count(movie_id) as movie_count
+from movies
+group by industry;
+
+
+-- Window Functions-- 
+
+select rank() over(order by imdb_rating desc) as rating, title,industry, imdb_rating from movies;
+
+select dense_rank() over(order by imdb_rating desc) as rating, title,industry, imdb_rating from movies;
+
+select dense_rank() over(partition by industry order by imdb_rating desc)  as rating, title,industry, imdb_rating from movies;
+
+
+create table temp_table as
+select dense_rank() over(order by imdb_rating desc) as rating, title,industry, imdb_rating from movies;
+
+select * from temp_table where rating =2;
+
+With categorized as (
+ select dense_rank() over(order by imdb_rating desc) as rating, title,industry, imdb_rating from movies
+ )
+ select imdb_rating, rating from categorized where rating =2 ;
+ 
+ 
+ Select * from financials;
+ 
+ create table new_table as 
+ select *, 
+ case when unit = "Thousands" then revenue/1000
+	  when unit = "Billions" then revenue*1000
+      else revenue
+end as revenue_mn
+from financials;
+
+select * from new_table;
+
+select *,
+case when revenue_mn < 5000 then "Low"
+	 when revenue_mn < 10000 then "Medium"
+     else "High"
+end as revenue_category
+from new_table;
+
+with categorized as (
+select *,
+case when revenue_mn < 5000 then "Low"
+	 when revenue_mn < 10000 then "Medium"
+     else "High"
+end as revenue_category
+from new_table)
+select * from categorized where revenue_category = "High";
+     
+     
+-- Get me the list of all customers  from Germany who have placed atleast 1 order-- 
+
+use classicmodels_db;
+
+select * from customers;
+select * from orders;
+
+select distinct c.customername, c.country
+from customers c
+inner join orders o
+on c.customernumber = o.customernumber
+where c.country = "Germany";
+
+-- find the total quantity of each product sold and display only those where total quantity > 500
+
+select * from orderdetails;
+ 
+select productcode, sum(quantityordered) as sum_qty 
+from orderdetails 
+group by productcode
+having sum_qty > 500
+order by sum_qty desc;
+ 
+ 
+ select distinct customernumber, customername from customers 
+ where customernumber in (select distinct customernumber from orders);
+ 
+ select customernumber, customername from customers
+ where exists(select customernumber from orders where customers.customernumber = orders.customernumber);
+ 
+ 
+select customernumber, customername from customers
+where NOT exists(select customernumber from orders where customers.customernumber = orders.customernumber);
+ 
+ 
+ use sakila;
+ 
+ select * from film;
+ 
+ use classicmodels_db;
+ select * from customers;
+ 
+ select customername, 
+ coalesce(state, "Not Available") as state_new
+ from customers;
+ 
+select customername, 
+state
+ from customers;
+ 
+ select customername, 
+ coalesce(creditlimit, 9999999) as cred_new
+ from customers;
+ 
+ select * from orderdetails;

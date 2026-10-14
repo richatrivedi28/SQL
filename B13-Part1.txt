@@ -1,0 +1,97 @@
+show databases;
+use classicmodels_db;
+
+show tables;
+
+select * from customers;
+select customernumber, customername from customers;
+select * from employees;
+
+select * from customers limit 2;
+select customernumber from customers limit 3;
+
+select * from customers where country = "USA";
+select * from customers  where country = "USA" limit 4;
+
+select * from customers where country = "USA" or country = "France";
+select * from customers where country IN ("USA","France");
+select * from customers where country IN ("USA");
+
+select * from customers where country NOT IN ("USA");
+select * from customers where country NOT IN ("USA","France");
+
+select * from customers where customernumber IN (114);
+
+select * from customers where creditlimit > 100000;
+select * from customers where country = "USA" and creditlimit > 100000;
+
+select * from customers where country NOT IN ("USA");
+select * from customers where country <> "USA";
+select * from customers where country != "USA";
+
+select * from customers where state is null;
+select * from customers where state is null and postalcode is null;
+
+select customernumber, customername, state, postalcode from customers where state is null and postalcode is null;
+
+select * from customers where creditlimit >= 100000 and creditlimit <= 200000;
+select * from customers where creditlimit between 100000 and 200000;
+
+select * from customers where customername like "%Gift%";
+
+select * from customers where customername like "%Ltd";
+
+select * from customers order by creditlimit;
+select * from customers order by creditlimit asc;
+select * from customers order by creditlimit desc;
+
+select * from customers order by country asc, city desc limit 4;
+
+select distinct country,state from customers order by country, state;
+
+select count(distinct country) as count_country from customers;
+
+select * from customers;
+select min(creditlimit) as min_cred, max(creditlimit) as max_cred, 
+avg(creditlimit) as avg_cred, count(creditlimit) as count_cred ,
+sum(creditlimit) as sum_cred from customers;
+
+select * from customers;
+
+select contactfirstname, contactlastname, concat(contactfirstname, " ", contactlastname) as Full_name from customers;
+
+select country, count(customernumber) as customer_count 
+from customers 
+group by country;
+
+select country, count(customernumber) as customer_count 
+from customers 
+group by country
+order by customer_count desc;
+
+select country, state, count(customernumber) as customer_count 
+from customers 
+group by country, state
+having customer_count > 10
+order by customer_count desc;
+
+select country, min(creditlimit) as min_cred
+from customers 
+group by country
+order by country;
+
+
+select * from customers;
+select * from offices;
+select distinct state from customers;
+
+select distinct state from offices;
+
+select distinct state from customers where state IN (select distinct state from offices);
+
+select distinct state from customers where state IN ("CA", "MA", "NY", "Chiyoda-Ku");
+
+select * from products;
+
+select * from products where buyprice > (select avg(buyprice) from products);
+select avg(buyprice) from products;
